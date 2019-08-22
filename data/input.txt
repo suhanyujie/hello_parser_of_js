@@ -1,1 +1,3 @@
 hi "lexer"
+hi "PHP"
+hi "Rust"
