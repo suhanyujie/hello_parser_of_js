@@ -1,7 +1,7 @@
 const {Source, EOL} = require("./source");
 const {Lexer, TokenType} = require("./lexer");
 const {Parser} = require('./parser');
-const {InterpretVisitor} = require('./interpreter');
+const {InterpretVisitor, YamlVisitor} = require('./interpreter');
 const util = require('util');
 const fs = require('fs');
 
@@ -20,4 +20,8 @@ const ast = parser.parseProg();
 // console.log(util.inspect(ast, true, null));
 
 const interpreter = new InterpretVisitor();
-interpreter.visitProg(ast);
+// interpreter.visitProg(ast);
+
+const ymlVisitor = new YamlVisitor();
+console.log(ast);
+console.log(ymlVisitor.visitProg(ast));

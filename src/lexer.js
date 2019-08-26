@@ -1,4 +1,4 @@
-const {EOL, EOF} = require('./source');
+const { EOL, EOF } = require('./source');
 const assert = require('assert').strict;
 
 class Lexer {
@@ -9,17 +9,13 @@ class Lexer {
     next() {
         this.skipWhitespace();
         const ch = this.src.peek();
-        // console.log(`current char is [${ch}]\n`);
-        switch(ch) {
-            case '"':
-                return this.readString();
-            case "h":
-                return this.readHi();
-            case EOF:
-                return new Token(TokenType.EOF);
-            default:
-                throw new Error(this.makeErrMsg());
-        }
+        // console.log(`current char is [${ch}] type is:${typeof(ch)} is op:${ch>"0" && ch <= "9"}\n`);
+        if (ch === '"') return this.readString();
+        if (ch === 'h') return this.readHi();
+        if (Lexer.isDigit(ch)) return this.readNumber();
+        if (Lexer.isOp(ch)) return this.readOp();
+        if (ch === EOF) return new Token(TokenType.EOF);
+        throw new Error(this.makeErrMsg());
     }
 
     skipWhitespace() {
@@ -59,6 +55,31 @@ class Lexer {
         return tok;
     }
 
+    readNumber() {
+        const tok = new Token(TokenType.NUMBER);
+        tok.loc.start = this.getPos();
+        const v = [this.src.read()];
+        while (true) {
+            let ch = this.src.peek();
+            if (Lexer.isDigit(ch)) {
+                v.push(this.src.read());
+                continue;
+            }
+            break;
+        }
+        tok.loc.end = this.getPos();
+        tok.value = v.join("");
+        return tok;
+    }
+
+    readOp() {
+        const tok = new Token();
+        tok.loc.start = this.getPos();
+        tok.type = this.src.read();
+        tok.loc.end = this.getPos();
+        return tok;
+    }
+
     makeErrMsg() {
         return `Unexpected char at line:${this.src.line} column:${this.src.col}`;
     }
@@ -72,6 +93,17 @@ class Lexer {
 
     getPos() {
         return this.src.getPos();
+    }
+
+    static isDigit(ch) {
+        return ch >= "0" && ch <= "9";
+    }
+
+    static isOp(ch) {
+        return ch == '+' ||
+            ch == '-' ||
+            ch == '*' ||
+            ch == '/';
     }
 }
 
@@ -90,11 +122,17 @@ class Token {
     }
 }
 
-class TokenType {}
+class TokenType { }
 
 TokenType.EOF = "eof";
 TokenType.HI = "hi";
 TokenType.STRING = "string";
+
+TokenType.NUMBER = "number";
+TokenType.MUL = "*";
+TokenType.DIV = "/";
+TokenType.ADD = "+";
+TokenType.SUB = "-";
 
 module.exports = {
     Lexer,

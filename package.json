@@ -1,0 +1,26 @@
+{
+  "name": "hello_lexer",
+  "version": "0.0.1",
+  "description": "learning lexer and parser",
+  "main": "src/entry.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/suhanyujie/hello_parser_of_js.git"
+  },
+  "keywords": [
+    "lexer",
+    "parser"
+  ],
+  "author": "suhanyujie",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/suhanyujie/hello_parser_of_js/issues"
+  },
+  "homepage": "https://github.com/suhanyujie/hello_parser_of_js#readme",
+  "dependencies": {
+    "js-yaml": "^3.13.1"
+  }
+}
