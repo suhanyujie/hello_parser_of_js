@@ -47,9 +47,44 @@ class Parser {
         return node;
     }
 
+    // parseExpr() {
+    //     const num = this.parseNum();
+    //     return this.parseExpr1(num);
+    // }
+
     parseExpr() {
-        const num = this.parseNum();
-        return this.parseExpr1(num);
+        let left = this.parseTerm();
+        while(true) {
+            const op = this.lexer.peek();
+            if (op.type !== "+" && op.type !== '-') break;
+            this.lexer.next();
+            const node = new BinaryExpr();
+            node.left = left;
+            node.op = op;
+            node.right = this.parseTerm();
+            left = node;
+        }
+
+        return left;
+    }
+
+    parseTerm() {
+        let left = this.parseFactor();
+        while(true) {
+            const op = this.lexer.peek();
+            if(op.type !== "*" && op.type !== "/") break;
+            this.lexer.next();
+            const node = new BinaryExpr();
+            node.left = left;
+            node.op = op;
+            node.right = this.parseFactor();
+            left = node;
+        }
+        return left;
+    }
+
+    parseFactor() {
+        return this.parseNum();
     }
 
     parseNum() {

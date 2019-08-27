@@ -100,10 +100,7 @@ class Lexer {
     }
 
     static isOp(ch) {
-        return ch == '+' ||
-            ch == '-' ||
-            ch == '*' ||
-            ch == '/';
+        return ['+', '-', '*', '/'].indexOf(ch) !== -1;
     }
 }
 
