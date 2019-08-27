@@ -18,6 +18,7 @@ class Parser {
             }
             if (tok.type === TokenType.HI) stmt = this.parseSayHi();
             if (tok.type === TokenType.NUMBER) stmt = this.parseExprStmt();
+            if (tok.type === TokenType.PRINT_STMT) stmt = this.parsePrintStmt();
             node.body.push(stmt);
         }
         node.loc.end = this.lexer.getPos();
@@ -35,6 +36,19 @@ class Parser {
 
         node.value = tok.value;
         node.loc.end = tok.loc.end;
+
+        return node;
+    }
+
+    parsePrintStmt() {
+        const node = new PrintStmt();
+        // print 关键词后 一定是一个表达式
+        let tok = this.lexer.next();
+        assert.ok(tok.type === TokenType.PRINT_STMT, this.makeErrMsg(tok));
+        node.loc.start = tok.loc.start;
+        node.type = NodeType.PRINT_STMT;
+        node.value = this.parseExprStmt();
+        node.loc.end = this.lexer.getPos();
 
         return node;
     }
@@ -151,6 +165,13 @@ class SayHi extends Node {
     }
 }
 
+class PrintStmt extends Node {
+    constructor(loc, value) {
+        super(NodeType.PRINT, loc);
+        this.value = value;
+    }
+}
+
 class ExprStmt extends Node {
     constructor(loc, value) {
         super(NodeType.EXPR_STMT, loc);
@@ -181,6 +202,7 @@ NodeType.SAYHI = "sayhi";
 NodeType.EXPR_STMT = "exprstmt";
 NodeType.BINARY_EXPR = "binaryExpr";
 NodeType.NUMBER = "number";
+NodeType.PRINT_STMT = "printStmt";
 
 module.exports = {
     Parser,

@@ -15,6 +15,7 @@ class Lexer {
         if (Lexer.isDigit(ch)) return this.readNumber();
         if (Lexer.isOp(ch)) return this.readOp();
         if (ch === EOF) return new Token(TokenType.EOF);
+        if (ch === 'p') return this.readPrint();
         throw new Error(this.makeErrMsg());
     }
 
@@ -86,6 +87,16 @@ class Lexer {
         return tok;
     }
 
+    readPrint() {
+        const tok = new Token();
+        tok.loc.start = this.getPos();
+        const v = this.src.read(5);
+        assert.ok(v === "print", this.makeErrMsg());
+        tok.type = TokenType.PRINT_STMT;
+        tok.loc.end = this.getPos();
+        return tok;
+    }
+
     makeErrMsg() {
         return `Unexpected char at line:${this.src.line} column:${this.src.col}`;
     }
@@ -137,6 +148,7 @@ TokenType.DIV = "/";
 TokenType.ADD = "+";
 TokenType.SUB = "-";
 TokenType.EXPO = "**";
+TokenType.PRINT_STMT = "print";
 
 module.exports = {
     Lexer,

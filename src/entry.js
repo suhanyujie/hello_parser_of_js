@@ -17,11 +17,12 @@ const parser = new Parser(lexer);
 // }
 
 const ast = parser.parseProg();
+console.log(ast);
 // console.log(util.inspect(ast, true, null));
 
 const interpreter = new InterpretVisitor();
-// interpreter.visitProg(ast);
+interpreter.visitProg(ast);
 
-const ymlVisitor = new YamlVisitor();
-console.log(ast);
-console.log(ymlVisitor.visitProg(ast));
+// const ymlVisitor = new YamlVisitor();
+// 打印成 yaml 格式
+// console.log(ymlVisitor.visitProg(ast));

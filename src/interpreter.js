@@ -1,12 +1,14 @@
-const {NodeType} = require('./parser');
+const { NodeType } = require('./parser');
 const yaml = require('js-yaml');
 
 class Visitor {
-    visitProg(node){}
+    visitProg(node) { }
 
-    visitSayHi(node){}
-    
-    visitExprStmt(node) {}
+    visitSayHi(node) { }
+
+    visitExprStmt(node) { }
+
+    visitPrintStmt(node) { }
 
     visitStmt(node) {
         switch (node.type) {
@@ -14,14 +16,16 @@ class Visitor {
                 return this.visitExprStmt(node);
             case NodeType.SAYHI:
                 return this.visitSayHi(node);
+            case NodeType.PRINT_STMT:
+                return this.visitPrintStmt(node);
         }
     }
 
-    visitStmtList(list) {}
+    visitStmtList(list) { }
 
-    visitNumLiteral(node) {}
+    visitNumLiteral(node) { }
 
-    visitBinaryExpr(node) {}
+    visitBinaryExpr(node) { }
 
     visitExpr(node) {
         switch (node.type) {
@@ -29,16 +33,54 @@ class Visitor {
                 return this.visitNumLiteral(node);
             case NodeType.BINARY_EXPR:
                 return this.visitBinaryExpr(node);
+            case NodeType.EXPR_STMT:
+                return this.visitExprStmt(node);
         }
     }
 }
 
 class InterpretVisitor extends Visitor {
     visitProg(node) {
-        node.body.forEach(stmt => this.visitSayHi(stmt));
+        node.body.forEach(stmt => this.visitStmt(stmt));
     }
+
     visitSayHi(node) {
         console.log(`hi ${node.value}`);
+    }
+
+    visitExprStmt(node) {
+        return {
+            type: node.type,
+            value: this.visitExpr(node.value)
+        };
+    }
+
+    visitBinaryExpr(node) {
+        const left = this.visitExpr(node.left);
+        const op = node.op.type;
+        const right = this.visitExpr(node.right);
+        switch (op) {
+            case "+":
+                return left + right;
+            case "-":
+                return left - right;
+            case "*":
+                return left * right;
+            case "/":
+                return left / right;
+            case "**":
+                return left ** right;
+            default:
+                throw new Error("unknow interpreter...");
+        }
+    }
+
+    visitPrintStmt(node) {
+        console.log(this.visitExpr(node.value));
+    }
+
+    visitNumLiteral(node) {
+        return parseInt(node.value);
     }
 }
 
@@ -50,7 +92,7 @@ class YamlVisitor extends Visitor {
         });
     }
 
-    visitStmtList (list) {
+    visitStmtList(list) {
         return list.map(stmt => this.visitStmt(stmt));
     }
 
