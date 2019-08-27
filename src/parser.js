@@ -69,7 +69,7 @@ class Parser {
     }
 
     parseTerm() {
-        let left = this.parseFactor();
+        let left = this.parseExpo();
         while(true) {
             const op = this.lexer.peek();
             if(op.type !== "*" && op.type !== "/") break;
@@ -77,7 +77,22 @@ class Parser {
             const node = new BinaryExpr();
             node.left = left;
             node.op = op;
-            node.right = this.parseFactor();
+            node.right = this.parseExpo();
+            left = node;
+        }
+        return left;
+    }
+
+    parseExpo() {
+        let left = this.parseFactor();
+        while(true) {
+            const op = this.lexer.peek();
+            if (op.type !== '**') break;
+            this.lexer.next();
+            const node = new BinaryExpr();
+            node.left = left;
+            node.op = op;
+            node.right = this.parseExpo();
             left = node;
         }
         return left;

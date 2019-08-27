@@ -76,6 +76,12 @@ class Lexer {
         const tok = new Token();
         tok.loc.start = this.getPos();
         tok.type = this.src.read();
+        if (tok.type == '*') {
+            if (this.src.peek() === '*') {
+                this.src.read();
+                tok.type = '**';
+            }
+        }
         tok.loc.end = this.getPos();
         return tok;
     }
@@ -130,6 +136,7 @@ TokenType.MUL = "*";
 TokenType.DIV = "/";
 TokenType.ADD = "+";
 TokenType.SUB = "-";
+TokenType.EXPO = "**";
 
 module.exports = {
     Lexer,
